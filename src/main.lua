@@ -72,7 +72,7 @@ end
 
 local function registerHooks()
     modutil.mod.Path.Wrap("StartNewRun", function(baseFunc, prevRun, args)
-        if not lib.isEnabled(config) then return baseFunc(prevRun, args) end
+        if not lib.isEnabled(config, public.definition.modpack) then return baseFunc(prevRun, args) end
         local currentRun = baseFunc(prevRun, args)
         if HeroHasTrait("SuitHexAspect") then
             RecordUse(nil, "SpellDrop")
@@ -81,7 +81,7 @@ local function registerHooks()
     end)
 
     modutil.mod.Path.Wrap("SpawnRoomReward", function(base, eventSource, args)
-        if not lib.isEnabled(config) then return base(eventSource, args) end
+        if not lib.isEnabled(config, public.definition.modpack) then return base(eventSource, args) end
         if HeroHasTrait("SuitHexAspect") and HeroHasTrait("SpellTalentKeepsake") and game.CurrentRun.CurrentRoom.BiomeStartRoom then
             args = args or {}
             if args.WaitUntilPickup then
@@ -106,8 +106,8 @@ modutil.once_loaded.game(function()
     loader.load(function()
         import_as_fallback(rom.game)
         registerHooks()
-        if lib.isEnabled(config) then apply() end
-        if public.definition.dataMutation and not mods['adamant-Modpack_Core'] then
+        if lib.isEnabled(config, public.definition.modpack) then apply() end
+        if public.definition.dataMutation and not lib.isCoordinated(public.definition.modpack) then
             SetupRunData()
         end
     end)
